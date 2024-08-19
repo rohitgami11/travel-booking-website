@@ -7,10 +7,25 @@ const cookieParser = require("cookie-parser");
 const { connectToMongoDB } = require("./connection");
 
 // Testing Routes Imports
+const homeRoute = require("./routes/home");
+const userRoute = require("./routes/user");
 const {
   handleCreateBookingById,
   handleDeleteBookingById,
 } = require("./controllers/authBooking");
+const { connectToMongoDB } = require("./connection");
+const {
+  sendVerificationEmail,
+  handleVerifyEmail,
+  handleUserSignup,
+  handleUserSignin,
+  GiveTokens,
+  giveUserForToken,
+} = require("./controllers/authUser");
+const {
+  restrictedToLoggedinUsersOnly,
+  checkAuth,
+} = require("./middlewares/auth");
 
 // Initialize the express app and define the port number
 const app = express();
@@ -37,6 +52,12 @@ app.use(cookieParser());
 // Testing Routes
 app.use("/handleCreateBookingById,", restrictedToLoggedinUsersOnly,handleCreateBookingById);
 app.use("/handleDeleteBookingById", restrictedToLoggedinUsersOnly,handleDeleteBookingById);
+app.use("/handleUserSignup",handleUserSignup);
+app.use("/handleUserSignin",handleUserSignin);
+app.use("/sendVerificationMail", sendVerificationEmail);
+app.use("/handleVerifyEmail", handleVerifyEmail);
+app.use("/GiveToken", GiveTokens);
+app.use("/giveUserForToken", giveUserForToken);
 
 // Start the backend app
 app.listen(PORT, () => console.log(`Server started at PORT:${PORT}`));
