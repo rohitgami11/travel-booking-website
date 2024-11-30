@@ -6,7 +6,7 @@ const { getUser } = require("../services/auth");
 async function handleCreateBookingById(req, res) {
   try {
 
-    const { Email, From, Amount, Destination, DateOfDeparture } = req.body;
+    const { Email, From, Destination, DateOfDeparture } = req.body;
 
 
     // Create a new booking instance
@@ -14,7 +14,6 @@ async function handleCreateBookingById(req, res) {
       from: From,
       to: Destination,
       date: DateOfDeparture,
-      amount: Amount,
       createdBy: Email,
       createdAt: Date.now(),
       isTraveled: false,

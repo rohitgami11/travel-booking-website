@@ -7,7 +7,7 @@ async function restrictedToLoggedinUsersOnly(req, res, next) {
   
   if (!user) {
     return res.json({message: "You have to Login first"});
-    // Temporary returning message now user should be redirected to login page
+    // Temporary returning message now user should render to login page
   }
 
   req.body.Email = decoded.Email;

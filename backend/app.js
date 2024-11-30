@@ -1,63 +1,54 @@
-// Import Dependencies
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
-// Route Imports
+// Import Route Handlers
 const { connectToMongoDB } = require("./connection");
+const authRoutes = require("./routes/authRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
+const packageRoutes = require("./routes/packageRoutes");
+const carRoutes = require("./routes/carRoutes");
+const placesRoutes = require("./routes/placesRoutes");
+const contactRoutes = require("./routes/contactRoutes");
+const testimonialRoutes = require("./routes/testimonialRoutes");
+const popularDestinationsRoutes = require("./routes/popularDestinationsRoutes");
 
-// Testing Routes Imports
-const homeRoute = require("./routes/home");
-const userRoute = require("./routes/user");
-const {
-  handleCreateBookingById,
-  handleDeleteBookingById,
-} = require("./controllers/authBooking");
-const { connectToMongoDB } = require("./connection");
-const {
-  sendVerificationEmail,
-  handleVerifyEmail,
-  handleUserSignup,
-  handleUserSignin,
-  GiveTokens,
-  giveUserForToken,
-} = require("./controllers/authUser");
-const {
-  restrictedToLoggedinUsersOnly,
-  checkAuth,
-} = require("./middlewares/auth");
-
-// Initialize the express app and define the port number
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000; // Use PORT from env or default to 8000
 
-// Database Connection
-connectToMongoDB("mongodb://localhost:27017/travel-website").then(() =>
-  console.log("MongoDB Connected")
-);
+// MongoDB connection
+const mongoURL = process.env.MONGODB_URL;
+connectToMongoDB(mongoURL).then(() => console.log("MongoDB Connected"));
 
-// Set the view engine to ejs
+// Set the view engine to EJS
 app.set("view engine", "ejs");
-
-// Specitic directory where views are located
 app.set("views", path.resolve("./views"));
 
-// Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' })); // to parse form data
 app.use(cookieParser());
 
-// Router
+// Enable CORS for all origins
+app.use(cors({
+  origin: function (origin, callback) {
+    callback(null, origin); // Reflect the request origin
+  },
+  credentials: true, // Allow credentials like cookies
+}));
 
-// Testing Routes
-app.use("/handleCreateBookingById,", restrictedToLoggedinUsersOnly,handleCreateBookingById);
-app.use("/handleDeleteBookingById", restrictedToLoggedinUsersOnly,handleDeleteBookingById);
-app.use("/handleUserSignup",handleUserSignup);
-app.use("/handleUserSignin",handleUserSignin);
-app.use("/sendVerificationMail", sendVerificationEmail);
-app.use("/handleVerifyEmail", handleVerifyEmail);
-app.use("/GiveToken", GiveTokens);
-app.use("/giveUserForToken", giveUserForToken);
+// Routes
+app.use("/auth", authRoutes); // Auth-related routes
+app.use("/booking", bookingRoutes); // Booking-related routes
+app.use("/packages", packageRoutes); // Package-related routes
+app.use('/places', placesRoutes);
+app.use("/cars", carRoutes); // Car-related routes
+app.use('/contact', contactRoutes);
+app.use("/testimonials", testimonialRoutes); // Testimonial-related routes
+app.use("/popular-destinations", popularDestinationsRoutes); // Popular destinations
 
-// Start the backend app
+// Start server
 app.listen(PORT, () => console.log(`Server started at PORT:${PORT}`));
+ 
